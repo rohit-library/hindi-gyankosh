@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>संपूर्ण हिंदी डिजिटल ज्ञानकोश एवं क्विज़</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Hindi&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #c0392b;
+            --primary-dark: #962d22;
+            --secondary: #e67e22;
+            --bg: #fdfbf7;
+            --card-bg: #ffffff;
+            --text: #2c3e50;
+            --border: #e0d8c3;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', 'Tiro Devanagari Hindi', serif; }
+        body { background-color: var(--bg); color: var(--text); line-height: 1.6; padding-bottom: 50px; }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white; text-align: center; padding: 2.2rem 1rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+
+        .nav-tabs {
+            display: flex; justify-content: center; gap: 10px; background: #fff;
+            padding: 12px; margin: -20px auto 25px auto; max-width: 700px;
+            border-radius: 30px; box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            border: 1px solid var(--border); flex-wrap: wrap;
+        }
+        .tab-btn {
+            background: transparent; border: none; padding: 10px 20px; font-size: 0.95rem;
+            font-weight: 600; cursor: pointer; border-radius: 20px; transition: 0.3s;
+        }
+        .tab-btn.active { background: var(--primary); color: white; }
+
+        .container { max-width: 900px; margin: 0 auto; padding: 0 15px; }
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+
+        .search-box input {
+            width: 100%; padding: 15px 20px; font-size: 1.1rem;
+            border: 2px solid var(--secondary); border-radius: 50px; outline: none; margin-bottom: 20px;
+        }
+        .card {
+            background: var(--card-bg); border: 1px solid var(--border);
+            border-radius: 12px; padding: 20px; margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04); transition: 0.2s;
+        }
+        .card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .card-title { font-size: 1.3rem; color: var(--primary-dark); }
+        .card-badge { background: #fff3e0; color: var(--secondary); padding: 3px 10px; border-radius: 12px; font-size: 0.85rem; font-weight: 600; float: right; }
+
+        .quiz-card {
+            background: white; padding: 25px; border-radius: 15px;
+            border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; margin-bottom: 5px; font-weight: 600; }
+        .input-group input {
+            width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 1rem;
+        }
+        .btn-submit {
+            background: var(--primary); color: white; border: none; padding: 12px 25px;
+            font-size: 1rem; font-weight: 600; border-radius: 8px; cursor: pointer; width: 100%;
+        }
+        .btn-submit:hover { background: var(--primary-dark); }
+
+        .option-btn {
+            display: block; width: 100%; text-align: left; background: #f8f9fa;
+            border: 1px solid #ddd; padding: 12px 15px; margin: 8px 0;
+            border-radius: 8px; cursor: pointer; font-size: 1rem; transition: 0.2s;
+        }
+        .option-btn:hover { background: #eef2f5; border-color: var(--secondary); }
+
+        .loading-text { text-align: center; padding: 30px; font-size: 1.2rem; color: #666; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🇮🇳 संपूर्ण हिंदी डिजिटल ज्ञानकोश एवं प्रतियोगिता क्विज़</h1>
+        <p>व्याकरण, दुर्लभ मुहावरे, प्रसिद्ध पुस्तकें, साहित्य एवं लाइव क्विज़</p>
+    </header>
+
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="switchTab('search-section', this)">🔎 संपूर्ण ज्ञानकोश खोजें</button>
+        <button class="tab-btn" onclick="switchTab('quiz-section', this)">🏆 प्रतियोगिता क्विज़</button>
+    </div>
+
+    <div class="container">
+
+        <!-- SEARCH SECTION -->
+        <div id="search-section" class="content-section active">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="🔎 कुछ भी खोजें... (उदा. समास, कामायनी, उदंत मार्तंड, मुहावरे, कबीर)">
+            </div>
+            <div id="resultsContainer">
+                <div class="loading-text">⌛ ज्ञानकोश का डेटा लोड हो रहा है...</div>
+            </div>
+        </div>
+
+        <!-- QUIZ SECTION -->
+        <div id="quiz-section" class="content-section">
+            <div class="quiz-card" id="quiz-box">
+                <div id="user-details-form">
+                    <h2>📝 हिंदी प्रतियोगिता क्विज़</h2>
+                    <p style="margin-bottom: 15px; color: #666;">अपना नाम दर्ज करें और टेस्ट शुरू करें:</p>
+                    <div class="input-group">
+                        <label>पूरा नाम:</label>
+                        <input type="text" id="userName" placeholder="अपना नाम लिखें">
+                    </div>
+                    <button class="btn-submit" onclick="startQuiz()">क्विज़ शुरू करें 🚀</button>
+                </div>
+
+                <div id="quiz-questions-box" style="display: none;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                        <span id="question-count" style="font-weight: bold; color: var(--primary);">प्रश्न 1/5</span>
+                        <span id="quiz-timer" style="color: var(--secondary); font-weight: bold;">समय: 0s</span>
+                    </div>
+                    <h3 id="question-text" style="margin-bottom: 15px;"></h3>
+                    <div id="options-container"></div>
+                </div>
+
+                <div id="quiz-result-box" style="display: none; text-align: center;">
+                    <h2>🎉 क्विज़ पूरा हुआ!</h2>
+                    <p id="final-score" style="font-size: 1.4rem; margin: 15px 0; color: var(--primary); font-weight: bold;"></p>
+                    <button class="btn-submit" onclick="location.reload()">पुनः प्रयास करें 🔄</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let HINDI_DATABASE = [];
+
+        // 🔗 hindi_data.json को ऑटोमैटिक लोड करना
+        fetch('hindi_data.json')
+            .then(response => {
+                if(!response.ok) throw new Error("डेटा फ़ाइल नहीं मिली");
+                return response.json();
+            })
+            .then(data => {
+                HINDI_DATABASE = data;
+                renderSearch(HINDI_DATABASE);
+            })
+            .catch(error => {
+                console.error("त्रुटि:", error);
+                document.getElementById('resultsContainer').innerHTML = 
+                    `<p style="color:red; text-align:center;">❌ hindi_data.json फ़ाइल लोड करने में समस्या आई। कृपया फ़ाइल नाम जाँचें।</p>`;
+            });
+
+        // Search Render Function
+        function renderSearch(data) {
+            const resultsContainer = document.getElementById('resultsContainer');
+            resultsContainer.innerHTML = '';
+            
+            if(data.length === 0) {
+                resultsContainer.innerHTML = `<p style="text-align:center; padding: 20px; color:#777;">कोई परिणाम नहीं मिला। कुछ और खोजें...</p>`;
+                return;
+            }
+
+            data.forEach(item => {
+                resultsContainer.innerHTML += `
+                    <div class="card">
+                        <span class="card-badge">${item.category}</span>
+                        <h3 class="card-title">${item.topic}</h3>
+                        <p style="margin-top:5px;"><b>संक्षिप्त:</b> ${item.short}</p>
+                        <p style="color:#555; font-size:0.95rem; margin-top:5px;">${item.detailed}</p>
+                    </div>`;
+            });
+        }
+
+        // Live Search Input Handler
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            const filtered = HINDI_DATABASE.filter(item => 
+                item.topic.toLowerCase().includes(query) || 
+                item.category.toLowerCase().includes(query) ||
+                item.short.toLowerCase().includes(query) ||
+                (item.keywords && item.keywords.some(k => k.toLowerCase().includes(query)))
+            );
+            renderSearch(filtered);
+        });
+
+        // Tab Switching
+        function switchTab(sectionId, btn) {
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        // Sample Quiz Questions
+        const QUIZ_QUESTIONS = [
+            { q: "हिंदी का प्रथम समाचार पत्र किसे माना जाता है?", options: ["उदंत मार्तंड", "केसरी", "दैनिक जागरण", "पंजाब केसरी"], correct: 0 },
+            { q: "संविधान के किस अनुच्छेद के अनुसार हिंदी संघ की राजभाषा है?", options: ["370", "343(1)", "356", "51A"], correct: 1 },
+            { q: "प्रसिद्ध उपन्यास 'गोदान' के रचयिता कौन हैं?", options: ["जयशंकर प्रसाद", "निराला", "मुंशी प्रेमचंद", "महादेवी वर्मा"], correct: 2 },
+            { q: "'काठ का उल्लू होना' मुहावरे का सही अर्थ क्या है?", options: ["चतुर होना", "अत्यंत मूर्ख होना", "रात में जागना", "लकड़ी का पक्षी"], correct: 1 },
+            { q: "महाकाव्य 'कामायनी' किसकी रचना है?", options: ["सुमित्रानंदन पंत", "दिनकर", "जयशंकर प्रसाद", "बच्चन"], correct: 2 }
+        ];
+
+        let currentQ = 0, score = 0, timer, seconds = 0;
+
+        function startQuiz() {
+            const name = document.getElementById('userName').value.trim();
+            if(!name) { alert("कृपया अपना नाम लिखें!"); return; }
+
+            document.getElementById('user-details-form').style.display = 'none';
+            document.getElementById('quiz-questions-box').style.display = 'block';
+
+            timer = setInterval(() => { seconds++; document.getElementById('quiz-timer').innerText = `समय: ${seconds}s`; }, 1000);
+            loadQ();
+        }
+
+        function loadQ() {
+            const q = QUIZ_QUESTIONS[currentQ];
+            document.getElementById('question-count').innerText = `प्रश्न ${currentQ + 1}/${QUIZ_QUESTIONS.length}`;
+            document.getElementById('question-text').innerText = q.q;
+            
+            const opts = document.getElementById('options-container');
+            opts.innerHTML = '';
+            q.options.forEach((opt, idx) => {
+                opts.innerHTML += `<button class="option-btn" onclick="checkAns(${idx})">${opt}</button>`;
+            });
+        }
+
+        function checkAns(idx) {
+            if(idx === QUIZ_QUESTIONS[currentQ].correct) score++;
+            currentQ++;
+            if(currentQ < QUIZ_QUESTIONS.length) loadQ();
+            else {
+                clearInterval(timer);
+                document.getElementById('quiz-questions-box').style.display = 'none';
+                document.getElementById('quiz-result-box').style.display = 'block';
+                document.getElementById('final-score').innerText = `${document.getElementById('userName').value}, आपका स्कोर: ${score}/${QUIZ_QUESTIONS.length} (${seconds} सेकंड में)`;
+            }
+        }
+    </script>
+</body>
+</html>
